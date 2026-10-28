@@ -38,3 +38,16 @@ The suite exercises both standard SQLite and the libSQL adapter, plus Vercel's r
 The existing local/Docker setup still uses `data/app.sqlite3` unless Turso environment variables are supplied. Local preview records are not automatically migrated to the production database. Use a reviewed migration if those records must be retained.
 
 For backups and recovery on Vercel, use Turso's database backup/recovery facilities and verify the retention included with your selected plan. The Docker file-copy instructions do not apply to Turso.
+
+## Current live deployment
+
+- Website: https://money-wise-beige-omega.vercel.app
+- Admin: https://money-wise-beige-omega.vercel.app/admin
+- Vercel project: `deekshithnc-8994s-projects/money-wise`
+- Vercel-linked repository: `ncdeekshith/money-wise` (private deployment copy created by Vercel).
+- Original source repository: `deekshithnc-08/Money-wise`.
+- Database: dedicated `money-wise-bookings`, Turso Starter, Mumbai; connected to Production only.
+
+Vercel follows the private deployment copy's `main` branch. Pushing only to the original source repository does not redeploy the site; future app updates must also be applied to the Vercel-linked repository. Vercel's clone renamed the imported history to an initial commit; all application file hashes were verified against the tested source before deployment.
+
+The owner-approved admin credentials are in the local, Git-ignored `data/vercel-admin-access.txt`. They are not committed or included in the Vercel upload. No real local preview records were migrated. SMS verification remains unconfigured; offline payment tracking is enabled, not online collection.

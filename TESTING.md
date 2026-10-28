@@ -12,3 +12,12 @@ Verified locally on 29 October 2026:
 - No online payment gateway is included or tested; payments are offline records.
 
 Screenshot evidence is in the local, Git-ignored `previews/` directory.
+
+## Vercel verification — 29 October 2026
+
+- 15 integration tests passed with Python 3.12: original SQLite tests, the same tests through the libSQL adapter, and rejection of ephemeral storage on Vercel.
+- Live Turso test verified persistence across independent connections and transaction rollback.
+- Live Vercel domain returned HTTP 200 for the landing page and configuration endpoint.
+- Live end-to-end test passed: unauthenticated admin denial, unique referral generation with the production domain, booking creation, admin sign-in, participant/referrer/source mapping, recorded payment and referral revenue, and logout.
+- Synthetic production test records were removed by their exact IDs; real data was not modified.
+- Browser confirmed the public landing page renders correctly. Evidence: local `previews/vercel-live.jpg`.
