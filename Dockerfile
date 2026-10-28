@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 WORKDIR /app
-COPY server.py ./
+COPY server.py database.py ./
 COPY public ./public
 RUN useradd --create-home app && mkdir /app/data && chown -R app:app /app
 USER app

@@ -1,5 +1,7 @@
 # Deployment and operations
 
+For the Vercel + Turso deployment, follow [VERCEL.md](VERCEL.md). The Docker instructions below remain an alternative.
+
 ## 1. Prepare the programme
 
 Confirm the public domain, batch name, dates, venue, fees and booking policy with myPAL. The current application records booking requests and offline payments only. Publish a designated privacy contact and retention period in `public/privacy.html` before collecting real contacts. Review the consent wording and ownership/use rights for the supplied flyer.

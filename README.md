@@ -1,6 +1,8 @@
 # Money Wise Women · myPAL
 
-A working, responsive programme landing page and private booking/referral dashboard. The supplied programme poster is included unchanged as the design and content reference. No repository has been pushed and no hosted service has been provisioned.
+A working, responsive programme landing page and private booking/referral dashboard. The supplied programme poster is included unchanged as the design and content reference. The source is published on GitHub. Vercel deployment is supported with a dedicated Turso Cloud database.
+
+For Vercel setup, see [VERCEL.md](VERCEL.md). Local development still works without cloud credentials.
 
 ## Run locally
 
@@ -79,7 +81,7 @@ The integration suite starts an isolated local server and temporary database. It
 
 ## Deploy
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for a Docker + HTTPS reverse-proxy deployment, persistent storage, backups and launch configuration. This app requires a long-running Python process and writable persistent disk. GitHub Pages/static-only hosting will not run the backend. Run a **single instance** against the SQLite database; do not put the database on a shared network filesystem or ephemeral container disk.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for a Docker + HTTPS reverse-proxy deployment, persistent storage, backups and launch configuration. The Docker option requires a long-running Python process and writable persistent disk; Vercel uses the included Python function with Turso instead. GitHub Pages/static-only hosting will not run the backend. Run a **single instance** against the SQLite database; do not put the database on a shared network filesystem or ephemeral container disk.
 
 ## GitHub preparation
 

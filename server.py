@@ -15,20 +15,28 @@ if (ROOT / '.env').exists():
             key, value = line.split('=', 1)
             os.environ.setdefault(key.strip(), value.strip().strip('\"\''))
 DB = os.getenv('DATABASE_PATH', str(ROOT / 'data/app.sqlite3'))
-BASE = os.getenv('PUBLIC_URL', 'http://localhost:8000').rstrip('/')
+BASE = os.getenv('PUBLIC_URL', ('https://' + os.environ['VERCEL_PROJECT_PRODUCTION_URL']) if os.getenv('VERCEL_PROJECT_PRODUCTION_URL') else 'http://localhost:8000').rstrip('/')
 SECURE = BASE.startswith('https://')
 OTP = all(os.getenv(k) for k in ('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_VERIFY_SERVICE_SID'))
 
 def db():
+    if os.getenv('TURSO_DATABASE_URL') and os.getenv('TURSO_AUTH_TOKEN'):
+        from database import RemoteConnection
+        return RemoteConnection(os.environ['TURSO_DATABASE_URL'], os.environ['TURSO_AUTH_TOKEN'])
+    if os.getenv('VERCEL'):
+        raise RuntimeError('Persistent Turso database configuration is required on Vercel.')
     c = sqlite3.connect(DB, timeout=15)
     c.row_factory = sqlite3.Row
     c.execute('PRAGMA foreign_keys=ON')
     return c
 
 def init_db():
-    Path(DB).parent.mkdir(parents=True, exist_ok=True)
+    remote = bool(os.getenv('TURSO_DATABASE_URL'))
+    if not remote and not os.getenv('VERCEL'):
+        Path(DB).parent.mkdir(parents=True, exist_ok=True)
     with db() as c:
-        c.execute('PRAGMA journal_mode=WAL')
+        if not remote:
+            c.execute('PRAGMA journal_mode=WAL')
         c.executescript('''
         CREATE TABLE IF NOT EXISTS admins (email TEXT PRIMARY KEY, salt TEXT NOT NULL, password TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, email TEXT, csrf TEXT, expires REAL);
@@ -181,7 +189,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def post(self, path, data):
         now = time.time()
-        ip = self.client_address[0]  # Do not trust user-controlled proxy headers.
+        ip = self.client_address[0]
+        # Vercel overwrites this header at its edge. Never trust it locally.
+        if os.getenv('VERCEL') == '1':
+            ip = self.headers.get('x-vercel-forwarded-for', ip).split(',')[0].strip()
         if path == '/api/visit':
             self.rate('visit:'+ip, 300, 3600)
             ref = field(data,'ref',40,False); source = field(data,'source',80,False)
