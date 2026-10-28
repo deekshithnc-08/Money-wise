@@ -79,6 +79,16 @@ class AppTests(unittest.TestCase):
             a=self.referral(phone=phone,token=token)
             self.assertEqual(self.request('/api/referrals',{'name':'A','phone':phone,'token':token,'consent':True})[0],400)
             token=self.request('/api/otp/check',{'phone':phone,'code':'123456'})[1]['token'];b=self.referral(phone=phone,token=token);self.assertEqual(a,b)
+    def test_name_and_mobile_are_enough_for_an_enquiry(self):
+        status,result=self.book(email='',city='')
+        self.assertEqual(status,201)
+        with server.db() as c:
+            lead=c.execute('SELECT * FROM bookings WHERE id=?',(result['id'],)).fetchone()
+            self.assertEqual(lead['phone'],'+919876543210')
+            self.assertEqual(lead['status'],'requested')
+            self.assertEqual(lead['email'],'')
+        self.assertEqual(self.book(phone='+919876543211',email='invalid')[0],400)
+
     def test_public_routes_no_secrets_and_persistence(self):
         for path in ['/','/refer','/admin','/privacy','/app.js','/admin.js','/styles.css','/api/config']:self.assertEqual(self.request(path)[0],200)
         for path in ['/server.py','/.env','/data/app.sqlite3']:self.assertEqual(self.request(path)[0],404)

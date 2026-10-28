@@ -247,8 +247,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(200,{'code':code,'url':BASE+'/?ref='+code,'verified':bool(verified)})
         if path == '/api/bookings':
             self.rate('booking:'+ip,20)
-            name=field(data,'name',100); phone=phone_number(data); email=field(data,'email',200); city=field(data,'city',100)
-            if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',email): raise ValueError('Enter a valid email address.')
+            name=field(data,'name',100); phone=phone_number(data); email=field(data,'email',200,False); city=field(data,'city',100,False)
+            if email and not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',email): raise ValueError('Enter a valid email address.')
             if data.get('consent') is not True: raise ValueError('Please agree to the privacy notice.')
             if data.get('website'): raise ValueError('Unable to submit this request.')
             with db() as c:
@@ -263,7 +263,7 @@ class Handler(BaseHTTPRequestHandler):
                 bid='MWB-'+secrets.token_hex(5).upper()
                 c.execute('INSERT INTO bookings(id,name,phone,email,city,batch,ref,source,campaign,partner,status,payment,consent,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                     (bid,name,phone,email,city,os.getenv('PROGRAMME_BATCH','Upcoming cohort'),ref,v['source'] if v else 'direct',v['campaign'] if v else '',v['partner'] if v else '','requested','pending','privacy-v1; booking follow-up consent',now))
-            return self.send(201,{'id':bid,'message':'Your booking request is received. The myPAL team will contact you with dates, fees and confirmation details.'})
+            return self.send(201,{'id':bid,'message':'Thank you for your interest. The myPAL team will contact you with programme dates, fees and next steps.'})
         if path == '/api/admin/login':
             self.rate('login:'+ip,10,900)
             email=field(data,'email',200).lower(); password=field(data,'password',300)
