@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+data/*
+!data/.gitkeep
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+*.sqlite3*
+coverage/
+previews/
